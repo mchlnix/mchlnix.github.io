@@ -1,0 +1,142 @@
+<html>
+    <head>
+    <style>
+        .line {
+            height: 20px;
+            width: 50px;
+            background-image: url("./line.png");
+            position: absolute;
+        }
+        body {
+            height: 100%;
+            width: 100%;
+
+            padding: 0px;
+            margin: 0px;
+
+            background-color: black;
+        }
+        .center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+                                
+            transform: translate(-50%, -50%);
+            
+            width: 100vw; 
+            height: 100vh;
+
+            max-height: 100vw;
+            max-width: 100vh;
+            
+            overflow: hidden;
+        }
+        canvas {
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            width: 100vw; 
+            height: 100vh;
+
+            max-height: 100vw;
+            max-width: 100vh;
+        }
+        @keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
+    </style>
+    <script>
+        min_dim = window.screen.height;
+        
+        if ( window.screen.width < min_dim )
+        {
+            min_dim = window.screen.width;
+        }
+        
+        function Layer(h="0", s="0", lines=5000, anim_len=Math.floor(20+Math.random()*20), arc_len=8) {
+            this.color = {"h": h, "s": s};
+            this.lines = lines;
+            this.anim_len = anim_len;
+
+            this.center = {"x": min_dim/2, "y": min_dim/2};
+            this.dimensions = {"height": min_dim, "width": min_dim}
+
+            this.circ_area = {"start": 0, "stop": min_dim/2 }
+            this.draw_area = {"start": 0, "stop": min_dim/2 }
+            this.arc_len = arc_len;
+
+            this.canvas = null;
+
+            this.render = function() { return render_canvas(this) };
+            this.draw   = function() { return draw_canvas(this)   };
+            };
+
+        render_canvas = function(layer) {
+          // create canvas object
+          
+          cvs = document.createElement("canvas")
+          cvs.setAttribute("height", layer.dimensions.height);
+          cvs.setAttribute("width", layer.dimensions.width);
+          
+          layer.canvas = cvs;
+                        
+          // add random animation length
+          
+          cvs.style.animation = "spin " + layer.anim_len + "s linear infinite"
+          
+          // add to body
+          
+          document.getElementById("container").appendChild(layer.canvas);
+          
+          return layer;
+        };
+
+        draw_canvas = function( layer ) {
+          
+          // draw lines on canvas
+          
+          ctx = layer.canvas.getContext("2d");
+                        
+          i = 0;
+
+          while( i < layer.lines) {
+            
+            distance = Math.pow(Math.random(),3);
+            
+            l = (100-90*distance);
+            
+            ctx.strokeStyle = "hsl("+ layer.color.h +"," + layer.color.s + "%,"+ l +"%)";
+            ctx.globalAlpha = 0.2+l/100;
+            
+            radius = layer.draw_area.start + (layer.draw_area.stop - layer.draw_area.start) * distance;
+
+            start_deg = Math.random()*360;
+            end_deg = start_deg + 3 + layer.arc_len * distance;
+            
+            ctx.beginPath();
+            ctx.arc(layer.center.x, layer.center.y, radius, start_deg * Math.PI/180, end_deg * Math.PI/180);
+            ctx.stroke();
+            
+            ++i;
+          }
+          
+          return layer;
+        };
+        
+        window.onload = function() {
+            
+            new Layer("0", "0", 2500).render().draw();
+            new Layer("0", "0", 2500).render().draw();
+            new Layer("60", "100", 2500).render().draw();
+            new Layer("90", "100", 2500).render().draw();
+            new Layer("192", "100", 2500).render().draw();
+            new Layer("192", "100", 2500).render().draw();
+            new Layer("0", "100", 2500).render().draw();
+            new Layer("330", "100", 2500).render().draw();
+      }
+    </script>
+    </head>
+    <body>
+        <div id="container" class="center">
+        
+        </div>
+    </body>
+</html>
